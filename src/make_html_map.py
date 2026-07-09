@@ -20,10 +20,12 @@ OUTPUT = Path(__file__).resolve().parent.parent / "output" / "network_map.html"
 METRICS = ["hub_score", "betweenness", "closeness", "degree", "n_lines", "pagerank", "eigenvector"]
 
 
-def collect_data():
-    G = build_graph()
-    add_transfer_edges(G, TRANSFER_WALK_DIST)
-    df = compute_centralities(G)
+def collect_data(G=None, df=None):
+    if G is None:
+        G = build_graph()
+        add_transfer_edges(G, TRANSFER_WALK_DIST)
+    if df is None:
+        df = compute_centralities(G)
 
     ids = list(df.index)
     index_of = {n: i for i, n in enumerate(ids)}
@@ -55,7 +57,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Transit network — stop centrality</title>
+<title>__TITLE__</title>
 <style>
   :root {
     --surface: #fcfcfb; --panel: #f9f9f7; --ink: #0b0b0b; --ink2: #52514e;
@@ -140,7 +142,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <body>
 <header>
   <div>
-    <h1>Transit network — stop centrality</h1>
+    <h1>__TITLE__</h1>
     <div class="sub" id="stats"></div>
   </div>
   <label>colour &amp; size by
@@ -381,22 +383,24 @@ draw();
 """
 
 
-def main() -> None:
-    nodes, edges = collect_data()
+def render_map(out_path: Path, G=None, df=None,
+               title: str = "Transit network — stop centrality") -> None:
+    nodes, edges = collect_data(G, df)
     options = "".join(
         f'<option value="{m}"{" selected" if m == "hub_score" else ""}>{m.replace("_", " ")}</option>'
         for m in METRICS
     )
     html = (
         HTML_TEMPLATE
+        .replace("__TITLE__", title)
         .replace("__METRIC_OPTIONS__", options)
         .replace("__NODES__", json.dumps(nodes, separators=(",", ":")))
         .replace("__EDGES__", json.dumps(edges, separators=(",", ":")))
         .replace("__METRICS__", json.dumps(METRICS))
     )
-    OUTPUT.write_text(html, encoding="utf-8")
-    print(f"wrote {OUTPUT} ({OUTPUT.stat().st_size / 1024:.0f} KB)")
+    out_path.write_text(html, encoding="utf-8")
+    print(f"wrote {out_path} ({out_path.stat().st_size / 1024:.0f} KB)")
 
 
 if __name__ == "__main__":
-    main()
+    render_map(OUTPUT)
