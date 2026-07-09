@@ -46,13 +46,18 @@ lines), plus the walking-transfer edges described above. Result: 1,593 nodes,
 
 ```bash
 pip install -r requirements.txt
-python src/centrality_analysis.py
+python src/centrality_analysis.py   # CSV + static charts
+python src/make_html_map.py         # interactive HTML map
 ```
 
 Outputs land in `output/`:
 
 - `node_centrality.csv` — every stop with all measures, coordinates and the
   lines serving it, sorted by hub score
+- `network_map.html` — **interactive map** (open in any browser, no server
+  needed): drag to pan, scroll to zoom, click a stop for its node id,
+  centrality scores and the lines serving it, and switch the metric that
+  drives colour and size
 - `network_map.png` — the network drawn in geographic space, stops sized and
   coloured by betweenness
 - `top_hubs.png` — top-15 hub stops by composite score
