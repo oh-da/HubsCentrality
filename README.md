@@ -42,6 +42,10 @@ lines), plus the walking-transfer edges described above. Result: 1,593 nodes,
 | `eigenvector` | connection to other well-connected stops |
 | `hub_score` | mean of the min–max-normalised measures above |
 
+New to these measures? See
+[docs/centrality_scores_explained.md](docs/centrality_scores_explained.md)
+for a plain-language guide with small worked examples.
+
 ## Four levels of analysis
 
 `data/Lines_and_Planned_Mode_18062026.csv` maps every line to its planned
